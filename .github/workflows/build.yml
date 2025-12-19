@@ -8,6 +8,10 @@ on:
         description: 'The version of the alpine'
         default: '2.10.2'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   setup-caddy-version:
     runs-on: ubuntu-latest
