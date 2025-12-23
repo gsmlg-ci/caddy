@@ -91,7 +91,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: caddy_${{ matrix.platforms.os }}_${{ matrix.platforms.arch }}
           asset_name: caddy_${{ matrix.platforms.os }}_${{ matrix.platforms.arch }}
-          tag: caddy-v${{ needs.setup-caddy-version.outputs.version }}
+          tag: v${{ needs.setup-caddy-version.outputs.version }}
   build-caddy-image:
     runs-on: ubuntu-latest
     needs: setup-caddy-version
