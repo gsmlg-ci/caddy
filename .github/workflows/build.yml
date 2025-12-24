@@ -139,3 +139,62 @@ jobs:
             docker.io/gsmlg/caddy:latest
             ghcr.io/gsmlg-dev/caddy:v${{ needs.setup-caddy-version.outputs.version }}
             ghcr.io/gsmlg-dev/caddy:latest
+
+  update-release:
+    runs-on: ubuntu-latest
+    needs: [setup-caddy-version, build-caddy-package, build-caddy-image]
+    steps:
+      - name: Update release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.setup-caddy-version.outputs.version }}
+        run: |
+          cat << EOF > release-notes.md
+          ## Caddy v${VERSION}
+
+          Custom build of [Caddy](https://caddyserver.com/) with additional plugins.
+
+          ### Included Plugins
+
+          | Plugin | Description |
+          |--------|-------------|
+          | [caddy-dns/cloudflare](https://github.com/caddy-dns/cloudflare) | Cloudflare DNS provider |
+          | [caddy-dns/vultr](https://github.com/caddy-dns/vultr) | Vultr DNS provider |
+          | [gsmlg-dev/route53](https://github.com/gsmlg-dev/route53) | AWS Route53 DNS provider |
+          | [gsmlg-dev/caddy-admin-ui](https://github.com/gsmlg-dev/caddy-admin-ui) | Admin UI for Caddy |
+          | [gsmlg-dev/caddy-handler-plugin](https://github.com/gsmlg-dev/caddy-handler-plugin) | Custom handler plugin |
+          | [gsmlg-dev/caddy-storage-s3](https://github.com/gsmlg-dev/caddy-storage-s3) | S3 storage backend |
+          | [caddyserver/cache-handler](https://github.com/caddyserver/cache-handler) | HTTP cache handler |
+          | [caddyserver/replace-response](https://github.com/caddyserver/replace-response) | Response body replacer |
+          | [caddyserver/forwardproxy](https://github.com/caddyserver/forwardproxy) | Forward proxy plugin |
+          | [mholt/caddy-ratelimit](https://github.com/mholt/caddy-ratelimit) | Rate limiting |
+          | [mholt/caddy-webdav](https://github.com/mholt/caddy-webdav) | WebDAV support |
+          | [mholt/caddy-l4](https://github.com/mholt/caddy-l4) | Layer 4 proxy |
+
+          ### Docker Images
+
+          \`\`\`bash
+          # Docker Hub
+          docker pull gsmlg/caddy:v${VERSION}
+          docker pull gsmlg/caddy:latest
+
+          # GitHub Container Registry
+          docker pull ghcr.io/gsmlg-dev/caddy:v${VERSION}
+          docker pull ghcr.io/gsmlg-dev/caddy:latest
+          \`\`\`
+
+          ### Binary Downloads
+
+          | OS | Arch | Download |
+          |----|------|----------|
+          | Linux | amd64 | [caddy_linux_amd64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_linux_amd64) |
+          | Linux | arm64 | [caddy_linux_arm64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_linux_arm64) |
+          | macOS | amd64 | [caddy_darwin_amd64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_darwin_amd64) |
+          | macOS | arm64 | [caddy_darwin_arm64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_darwin_arm64) |
+          | FreeBSD | amd64 | [caddy_freebsd_amd64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_freebsd_amd64) |
+          | Android | arm64 | [caddy_android_arm64](https://github.com/gsmlg-ci/caddy/releases/download/v${VERSION}/caddy_android_arm64) |
+          EOF
+
+          gh release edit "v${VERSION}" \
+            --title "Caddy v${VERSION}" \
+            --notes-file release-notes.md
