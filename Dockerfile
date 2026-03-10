@@ -14,6 +14,7 @@ RUN xcaddy build ${CADDY_VERSION} ${CADDY_WITH}
 
 FROM caddy:alpine
 
+LABEL org.opencontainers.image.source="https://github.com/gsmlg-ci/caddy"
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 LABEL maintainer="Jonathan Gao <gsmlg.com@gmail.com>"
